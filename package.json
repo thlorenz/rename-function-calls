@@ -1,7 +1,7 @@
 {
   "name": "rename-function-calls",
   "version": "0.0.0",
-  "description": "Renames functions when they are called, but leaves function definitions unchanged.",
+  "description": "Renames functions calls, but leaves function definitions unchanged.",
   "main": "index.js",
   "scripts": {
     "test": "tap test/*.js"
@@ -17,7 +17,7 @@
   "devDependencies": {
     "tap": "~0.4.3"
   },
-  "keywords": [],
+  "keywords": [ "replace", "refactor", "debug", "function", "AST" ],
   "author": {
     "name": "Thorsten Lorenz",
     "email": "thlorenz@gmx.de",
