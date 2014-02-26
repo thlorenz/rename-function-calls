@@ -9,7 +9,7 @@ function rangeComparator(a, b) {
 
 function getReplacements(fromName, toName, src) {
   var regex = new RegExp('^' + fromName);
-
+  
   var res = detective.find(src, { word: fromName, nodes: true, parse: esprimaOpts });
   return res.nodes.map(function (n) {
     var c = n.callee;
@@ -42,9 +42,15 @@ function rename(fromName, toName, origSrc) {
   // before we perform the expensive operation of finding them by creating an AST
   var regex = new RegExp(fromName + ' *\\(.*\\)');
   if (!regex.test(src)) return src
-
+    
+  // we need to remove hashbang BEFORE feeding src into detective, since if the latter replaces it our ranges are off
+  // we are assuming that the hashbang is on the first line - if not this breaks horribly
+  var hb = src.match(/^#![^\n]*\n/);
+  var hbs = hb ? hb[0] : '';
+  if (hb) src = src.slice(hbs.length);
+  
   var offset = 0;
-  return getReplacements(fromName, toName, src)
+  return hbs + getReplacements(fromName, toName, src)
     .sort(rangeComparator)
     .reduce(function(acc, replacement) {
       var from = replacement.from + offset
@@ -57,21 +63,4 @@ function rename(fromName, toName, origSrc) {
       offset += diff;
       return acc.slice(0, from) + code + acc.slice(to);
     }, src);
-}
-
-// Test
-if (!module.parent && typeof window === 'undefined') {
-  var src = [
-      'function x(a) { return "x" }'
-    , 'function y() { return "y" + x(); }'
-    , 'x()'
-    , 'y()'
-    , 'x(1, 2, 3)'
-    , 'var y = 2;'
-  ].join('\n');
-
-  var fromName = 'x';
-  var toName = 'replacedX';
-
-  go(fromName, toName, src);
 }
