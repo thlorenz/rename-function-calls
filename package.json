@@ -1,6 +1,6 @@
 {
   "name": "rename-function-calls",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Renames functions calls, but leaves function definitions unchanged.",
   "main": "index.js",
   "scripts": {
